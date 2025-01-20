@@ -10,6 +10,7 @@ NC='\033[0m' # No Color
 #init bool variables
 foundpass=no
 anywordlists=no
+casesensitive=no
 
 #init stat variables
 wordlistcount=0
@@ -52,31 +53,43 @@ echo -e "${ORANGE}[-] Remember! Some wordlists may be VERY big.${NC}\n"
 # pull or update wordlists
 
 if [ "$anywordlists" = "no" ];
-then
-echo -e "${GREEN}[+] It seems that there are no worlists yet, do you want to download some wordlists or exit script?${NC}"
-select downloadwordlists in "Download" "Exit"; do
-	case $downloadwordlists in
-	Download ) 
-	#SecLists
-	echo -e "${GREEN}[+] Cloning the wordlists from SecLists - this may take a while!${NC}\n"
-	git clone -n --depth=1 --filter=tree:0 \
-	  https://github.com/danielmiessler/SecLists 
-	cd SecLists
-	git sparse-checkout set --no-cone /Passwords/Common-Credentials /Passwords/Leaked-Databases
-	git checkout
-	cd ..
-	break;;
+	then
+	echo -e "${GREEN}[+] It seems that there are no worlists yet, do you want to download some wordlists or exit script?${NC}"
+	select downloadwordlists in "Download" "Exit"; do
+		case $downloadwordlists in
+		Download ) 
+		#SecLists
+		echo -e "${GREEN}[+] Cloning the wordlists from SecLists - this may take a while!${NC}\n"
+		git clone -n --depth=1 --filter=tree:0 \
+		  https://github.com/danielmiessler/SecLists 
+		cd SecLists
+		git sparse-checkout set --no-cone /Passwords/Common-Credentials /Passwords/Leaked-Databases
+		git checkout
+		cd ..
+		break;;
 	
-	Exit ) exit;;
-	esac
-	done	
-		
+		Exit ) exit;;
+		esac
+		done	
 fi
 
 
 #read password
-echo -e "${GREEN}[+] Please type in your password${NC}"
-read -s pass
+if [ "casesensitive" = "no" ];
+echo -e "${RED}[!] You are in case sensitive mode, if you want case insenitive use -i flag${NC}"
+echo -e "${RED}[!] The search will show exact matches${NC}"
+fi
+echo -e "${GREEN}[+] Please type in your password:${NC}"
+
+while read -s pass; do
+	if [ "$pass" = ""]
+	then
+	echo -e "${RED}[!] Password cannot be empty, please type in your password:${NC}"
+	else
+	break;
+	fi
+done
+
 
 #later# do string check for empty password
 echo ""
@@ -118,8 +131,7 @@ select cleanup in "Yes" "No"; do
 	Yes ) 
 		cd .. 
 		echo -e "${RED}[!] Deleting wordlist folder${NC}\n ${i}"
-		rm -rf wordlists
-		echo -e "${RED}[!] Deleting script${NC}\n ${i}"
+		rm -rf wordlists		
 	break;;
 	
 	No ) 
