@@ -84,7 +84,7 @@ fi
 echo -e "${GREEN}[+] Please type in your password:${NC}"
 
 while read -s pass; do
-	if [ "$pass" = ""]
+	if [[ $pass = "" ]];
 	then
 	echo -e "${RED}[!] Password cannot be empty, please type in your password:${NC}"
 	else
