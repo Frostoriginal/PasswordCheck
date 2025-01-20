@@ -76,9 +76,11 @@ fi
 
 #read password
 if [ "casesensitive" = "no" ];
+then
 echo -e "${RED}[!] You are in case sensitive mode, if you want case insenitive use -i flag${NC}"
 echo -e "${RED}[!] The search will show exact matches${NC}"
 fi
+
 echo -e "${GREEN}[+] Please type in your password:${NC}"
 
 while read -s pass; do
